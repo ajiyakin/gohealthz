@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GoHealthz - Simple web monitoring app</title>
+</head>
+<body onload="refreshList()">
+    <input type="text" name="web_url" id="input_url">
+    <input type="submit" value="Go" id="btn_submit">
+    <ul id="website_list"></ul>
+
+    <script type="text/javascript" language="javascript">
+    document.getElementById("btn_submit").addEventListener("click", storeWebsite);
+    document.getElementById("input_url").addEventListener("keypress", pressEnterStoreWebsite);
+
+    function pressEnterStoreWebsite(e) {
+        var key = e.which || e.keyCode;
+        if (key == 13) {
+            storeWebsite();
+        }
+    }
+
+    function storeWebsite() {
+        inputURLElement = document.getElementById("input_url");
+        url = inputURLElement.value;
+        isURLValid = validURL(url);
+        if (!isURLValid) {
+            alert("Invalid URL");
+            return;
+        }
+        xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/website", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 201) {
+                refreshList();
+                inputURLElement.value = "";
+            }
+            if (this.readyState == 4 && this.status != 201) {
+                alert("Failed to add new website: " + this.responseText);
+            }
+        };
+        xhttp.send('{"url": "' + url + '"}');
+    }
+
+    function refreshList() {
+        websiteList = document.getElementById("website_list");
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/website", true);
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                websiteList.innerHTML = '';
+                listOfWebsites = JSON.parse(this.responseText);
+                listOfWebsites.forEach(function(web) {
+                    listItem = document.createElement("li");
+                    listText = document.createTextNode(web.url + " - " + web.healty);
+                    listItem.appendChild(listText);
+                    listItem.setAttribute("id", web.id);
+                    websiteList.appendChild(listItem);
+                });
+            }
+            if (this.readyState == 4 && this.status != 200) {
+                alert("Unable to fetch list of website from the server: " + this.responseText);
+            }
+        };
+        xhttp.send();
+    }
+
+    function validURL(str) {
+        var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+            '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+        return !!pattern.test(str);
+    }
+    </script>
+</body>
+</html>
