@@ -34,7 +34,6 @@ type getWebsitesResponse struct {
 }
 
 func createWebsiteHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO Log all the events
 	if r.Method == http.MethodPost {
 		var requestBody createWebsiteRequest
 		if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
