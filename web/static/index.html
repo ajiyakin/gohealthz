@@ -98,6 +98,14 @@
         .healthiness_wrapper {
             float: left;
         }
+
+        .fa-check {
+            color: green;
+        }
+
+        .fa-times {
+            color: red;
+        }
     </style>
 </head>
 <body onload="refreshList()">
@@ -160,7 +168,7 @@
                     btnDelete.appendChild(btnDeleteText);
                     btnDelete.addEventListener("click", deleteWebsite);
 
-                    listText = document.createTextNode(web.url + " - " + web.healty + " ");
+                    listText = document.createTextNode(web.url);
 
                     listElementText = document.createElement("div");
                     listElementText.setAttribute("class", "item_list");
