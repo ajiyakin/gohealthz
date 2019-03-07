@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path"
-	"time"
 
 	"github.com/ajiyakin/gohealthz/internal/pkg/handler"
 	"github.com/ajiyakin/gohealthz/internal/pkg/storage"
@@ -12,10 +13,18 @@ import (
 )
 
 func main() {
-	http.DefaultClient.Timeout = 800 * time.Millisecond
+	c, err := parseFlag()
+	if err != nil {
+		fmt.Printf("invalid flags: %v", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("starting service with configurations: %#v\n", c)
+
+	http.DefaultClient.Timeout = c.httpClientTimeout
 	database := storage.NewInMemoryDatabase()
 
-	updater.StartUpdate(database, 5*time.Minute)
+	updater.StartUpdate(database, c.updaterInterval)
 
 	ui := http.FileServer(http.Dir(path.Join("web", "static")))
 	http.Handle("/", ui)

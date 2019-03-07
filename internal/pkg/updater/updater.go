@@ -11,12 +11,14 @@ import (
 // StartUpdate starts (run) updater on the background and will update
 // website healthiness in a given interval
 func StartUpdate(database storage.Database, interval time.Duration) {
+	log.Printf("starting updater...")
 	ticker := time.NewTicker(interval)
 	go func(database storage.Database) {
 		for range ticker.C {
 			updateHealthiness(database)
 		}
 	}(database)
+	log.Printf("...updater started")
 }
 
 func updateHealthiness(database storage.Database) {
