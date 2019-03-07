@@ -54,10 +54,21 @@
                 websiteList.innerHTML = '';
                 listOfWebsites = JSON.parse(this.responseText);
                 listOfWebsites.forEach(function(web) {
+                    btnDelete = document.createElement("button");
+                    btnDelete.setAttribute("class", "btn_delete");
+                    btnDelete.setAttribute("id", web.id);
+                    btnDelete.setAttribute("value", "Delete");
+                    btnDeleteText = document.createTextNode("Delete");
+                    btnDelete.appendChild(btnDeleteText);
+                    btnDelete.addEventListener("click", deleteWebsite);
+
+                    listText = document.createTextNode(web.url + " - " + web.healty + " ");
+
                     listItem = document.createElement("li");
-                    listText = document.createTextNode(web.url + " - " + web.healty);
                     listItem.appendChild(listText);
+                    listItem.appendChild(btnDelete)
                     listItem.setAttribute("id", web.id);
+
                     websiteList.appendChild(listItem);
                 });
             }
@@ -66,6 +77,23 @@
             }
         };
         xhttp.send();
+    }
+
+    function deleteWebsite(e) {
+        websiteID = this.getAttribute("id");
+        xhttp = new XMLHttpRequest();
+        xhttp.open("DELETE", "/website?website_id=" + websiteID, true);
+        xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                alert("Success delete website");
+            }
+            if (this.readyState == 4 && this.status != 200) {
+                alert("Failed to delete website: " + this.responseText);
+            }
+        };
+        xhttp.send();
+        refreshList();
     }
 
     function validURL(str) {

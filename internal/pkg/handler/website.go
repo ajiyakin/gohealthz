@@ -10,6 +10,10 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	httpGetRequestFunc = http.Get
+)
+
 type createWebsiteRequest struct {
 	URL string `json:"url"`
 }
@@ -32,7 +36,11 @@ func NewWebsiteHandler(database storage.Database) http.HandlerFunc {
 			getWebsites(w, r, database)
 			return
 		}
-		log.Printf("method %s is not allowed", r.Method)
+		if r.Method == http.MethodDelete {
+			deleteWebsite(w, r, database)
+			return
+		}
+		log.Printf("%s - method %s is not allowed", r.URL.Path, r.Method)
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
@@ -84,7 +92,7 @@ func createWebsite(w http.ResponseWriter, r *http.Request, database storage.Data
 	}
 	// TODO Set timeout to 800ms
 	var healthiness bool
-	response, err := http.Get(requestBody.URL)
+	response, err := httpGetRequestFunc(requestBody.URL)
 	if err != nil {
 		log.Printf("url %s is not healthy: %v", requestBody.URL, err)
 	}
@@ -103,4 +111,27 @@ func createWebsite(w http.ResponseWriter, r *http.Request, database storage.Data
 	}
 	log.Print("successfully store website to database")
 	w.WriteHeader(http.StatusCreated)
+}
+
+// deleteWebsite removes a website from database. delete action will ALWAYS
+// return success whether the record is found or not within database
+func deleteWebsite(w http.ResponseWriter, r *http.Request, database storage.Database) {
+	if err := r.ParseForm(); err != nil {
+		log.Printf("unable to parse form: %v", err)
+		http.Error(w, "invalid form parameter", http.StatusBadRequest)
+		return
+	}
+	websiteID := r.FormValue("website_id")
+	if websiteID == "" {
+		log.Printf("website_id is empty")
+		http.Error(w, "website_id is required", http.StatusBadRequest)
+		return
+	}
+	if err := database.Delete(websiteID); err != nil {
+		log.Printf("unable to delete a website with id: %s from database: %v", websiteID, err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	log.Printf("success delete website with id: %s", websiteID)
+	w.WriteHeader(http.StatusOK)
 }
