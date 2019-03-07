@@ -8,7 +8,7 @@ clean:
 
 .PHONY: run
 run:
-	./cmd/gohealthz/gohealthz
+	./cmd/gohealthz/gohealthz -timeout=800ms -interval=5m
 
 .PHONY: test
 test:

@@ -19,7 +19,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("starting service with configurations: %#v\n", c)
+	fmt.Printf("starting service with configurations: %s\n", c.String())
 
 	http.DefaultClient.Timeout = c.httpClientTimeout
 	database := storage.NewInMemoryDatabase()
