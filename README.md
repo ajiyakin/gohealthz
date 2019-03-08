@@ -8,7 +8,7 @@ website.
 - [GNU Make](https://www.gnu.org/software/make/manual/make.html)
 - [Golang](https://golang.org/)
 
-## How to Run
+## How to Run, Build, and Clean Up
 
 In order to run the apps, please build it first so it will produce binary
 executable file.
@@ -43,3 +43,17 @@ that developer can easily play with REST API of this apps without having
 to test it manually through postman, curl, etc. One thing to note is that
 the API specs (open API) is not automatically generated from the routes
 of the application, it is manually written _as for now_.
+
+## Library Dependencies
+
+Currently, the only external package that being imported by this application
+is only [Google's uuid](github.com/google/uuid). It is used to generate UUID
+for the database.
+
+## Database
+
+This apps, for now is only support in-memory database, which will works out
+of the box withouth having to install other third party database storage.
+However, the pakcage for the storage is modular and layered with an `interface`
+so that developer can easily writes and switch the database driver without
+having to worry changing so many lines of code.
