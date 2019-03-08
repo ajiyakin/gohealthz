@@ -7,6 +7,7 @@ website.
 
 - [GNU Make](https://www.gnu.org/software/make/manual/make.html)
 - [Golang](https://golang.org/)
+- [Google's UUID](github.com/google/uuid): Install it using `go get -u github.com/google/uuid`
 
 ## How to Run, Build, and Clean Up
 
