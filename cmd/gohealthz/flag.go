@@ -21,7 +21,7 @@ func parseFlag() (*config, error) {
 	httpClientTimeoutFlag := flag.String("timeout", "800ms", "Updater interval")
 	helpFlag := flag.Bool("help", false, "print this message")
 	flag.Parse()
-	if *helpFlag || len(os.Args) < 2 {
+	if *helpFlag {
 		flag.Usage()
 		os.Exit(0)
 	}

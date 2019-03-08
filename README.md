@@ -34,3 +34,12 @@ If there's a need to clean all the resources created during build and run,
 use this command:
 
 `make clean`
+
+## Playground
+
+When the application is running, there's an endpoint called `/swagger` that
+will provide playground for REST API for this application. It is provided so
+that developer can easily play with REST API of this apps without having
+to test it manually through postman, curl, etc. One thing to note is that
+the API specs (open API) is not automatically generated from the routes
+of the application, it is manually written _as for now_.
